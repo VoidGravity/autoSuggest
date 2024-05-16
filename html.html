@@ -40,6 +40,9 @@
         if (response.text().split(' ').length > 4) {
           outputElement.textContent = "";
         } else {
+          if (response.text() === "true") {
+            outputElement.textContent = "";
+          }
           const text = "Did you mean : " + response.text();
           outputElement.textContent = text;
         }
