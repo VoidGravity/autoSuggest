@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gemini API Text Generation</title>
+  <script src="https://cdn.jsdelivr.net/npm/@google-ai/generativelanguage@0.5.0/dist/umd/index.min.js"></script>
+  <script type="importmap">
+    { "imports": { "@google/generative-ai": "https://esm.run/@google/generative-ai" } }
+  </script>
+  <style>
+  /* Your existing CSS styles here */
+    .suggestion {
+      background-color: #f1f3f4;
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      cursor: pointer; /* Optional: Make it look clickable */
+    }
+  </style>
+  <script type="module">
+
+    import { GoogleGenerativeAI } from "@google/generative-ai";
+    const API_KEY = "AIzaSyDiQmn8MA-0-yt-NB6cNR1edovtvdpoHIc";
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
+    const inputElement = document.getElementById("userInput");
+    const outputElement = document.getElementById("output");
+    let lastPrompt = "";
+
+    inputElement.addEventListener("keyup", async function(event) {
+      if (event.key === " " && inputElement.value !== lastPrompt) { 
+        lastPrompt = inputElement.value;
+
+        const prompt_pre = inputElement.value;
+        const prompt = "correct the following sentence, don't add anything to the corrected sentence , if it is already correct repond with true: " + prompt_pre;
+        outputElement.textContent = "Generating...";
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        if (response.text().split(' ').length > 4) {
+          outputElement.textContent = "";
+        } else {
+          const text = "Did you mean : " + response.text();
+          outputElement.textContent = text;
+        }
+        
+      }
+    });
+  </script>
+  
+</head>
+<body>
+  <div id="suggestions"></div> 
+  <input type="text" id="userInput" placeholder="Enter your text here...">
+  <div id="output"></div> 
+  
+</body>
+</html>
