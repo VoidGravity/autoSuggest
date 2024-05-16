@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Search Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <style>
+    /* CSS styles go here */
+    body {
+      background: #e2e1e0;
+      display: flex;
+      min-height: 100vh;
+      flex-direction: column;
+    }
+
+    .container {
+      flex: 1 0 auto;
+    }
+
+    .no-margin {
+      margin: 0 !important;
+    }
+
+    .no-border {
+      border: 0 !important;
+    }
+
+    .border {
+      border: 1px solid #e0e0e0 !important;
+    }
+
+    .center-flex {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay {
+      position: fixed;
+      z-index: 999;
+      height: 2em;
+      width: 2em;
+      overflow: visible;
+      margin: auto;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+    }
+
+    .overlay:before {
+      content: "";
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  
+
+  <div class="container center-flex">
+    <div class="row">
+      <form id="search-form">
+        <div class="input-field col s11">
+          <input type="text" id="autocomplete-input" autocomplete="off" class="autocomplete" name="query" required>
+          <label for="autocomplete-input">Search Keyword</label>
+        </div>
+        <div class="input-field col s1">
+          <button class="waves-effect waves-light btn-large" type="submit">Search</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="container" id="container">
+    <div class="row">
+    </div>
+  </div>
+
+
+  <script>
+    $(document).ready(function() {
+    $("input.autocomplete").autocomplete({ minLength: 1 });
+
+    $("input.autocomplete").on("keydown", function() {
+        if ($("input.autocomplete").val().length === 0) return;
+
+        var clients = {
+            youtube: { client: "youtube", ds: "yt" }
+        };
+
+        var client = clients["youtube"];
+        var term = $("input.autocomplete").val();
+
+        $.ajax({
+            url: "//clients1.google.com/complete/search",
+            dataType: "jsonp",
+            data: { q: term, nolabels: "t", client: client.client, ds: client.ds },
+            success: function(r) {
+                var data = {};
+                Array.prototype.forEach.call(r[1], function(item) {
+                    data[item[0]] = null; // Store the suggestion as the key
+                });
+
+                $("input.autocomplete").autocomplete({
+                    data: data,
+                    limit: 5,
+                    // Replace onAutocomplete with onSelect
+                    onSelect: function(val) { 
+                        $("input.autocomplete").val(val); // Set the input value to the selected suggestion
+                    }
+                });
+            }
+        });
+    });
+});
+
+  </script>
+</body>
+</html>
